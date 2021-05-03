@@ -1,3 +1,56 @@
+<?php
+
+session_start();
+
+
+require_once "connect_test.php";
+
+if (isset($_POST['signup'])){
+  unset($error);
+  $phone_number =  mysql_real_escape_string(stripslashes(strip_tags($_POST["Sphone_number"])));
+  $password =  mysql_real_escape_string(($_POST["Spassword"]));
+  $email =  mysql_real_escape_string(stripslashes(strip_tags($_POST["Semail"])));
+
+
+  $sql = 'SELECT * FROM Accounts WHERE Email = "'.$email.'"';
+  $results = mysql_query($sql, $conn);
+  $num_rows = mysql_num_rows($results);
+  //echo $num_rows;
+  if ($num_rows > 0){
+    $error = "This email is already taken!<br>";
+    echo $error;
+  }
+
+  else {
+    $sql= "SELECT UserID FROM Accounts ORDER BY UserID DESC LIMIT 1";
+    $results = mysql_query($sql, $conn);
+    $row = mysql_fetch_assoc($results);
+    $LastId = $row['UserID']+1;
+    $sql = "INSERT INTO Accounts (UserID, Email, Password, Phone) VALUES ('$LastId','$email','$password','$phone_number')";
+    if(mysql_query($sql, $conn)) {
+      $_SESSION["loggedIn"] = TRUE;
+      $_SESSION["email"] = $email;
+      $_SESSION["userID"] = $LastId;
+      $_SESSION["phone_number"] = $phone_number;
+
+      header("Location: http://weblab.cs.uml.edu/~alora1/capstoneuml-main/Capstone/user.php");
+    }
+    else{
+      echo("Error creating account. Please try again later.");
+    }
+  }
+}
+
+
+if (isset($_POST['stock_insert'])){
+
+  header("Location: http://weblab.cs.uml.edu/~alora1/capstoneuml-main/Capstone/logout.php");
+
+}
+
+?>
+
+
 <!DOCTYPE html>
 <html>
    <head>
@@ -20,29 +73,32 @@
             <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-               <div class="navbar-nav">
-                  <a class="nav-item nav-link active" href="http://cs.uml.edu/~alora1/capstoneuml-main/Capstone/login.php">Login</a>
-                  <a class="nav-item nav-link active" href="http://cs.uml.edu/~alora1/capstoneuml-main/Capstone/user.php">Dashboard<span class="sr-only">(current)</span></a>
-                  <a class="nav-item nav-link active" href="http://cs.uml.edu/~alora1/capstoneuml-main/Capstone/patchnotes.php">Patch Notes</a>
-                  <a class="nav-item nav-link active" href="http://cs.uml.edu/~alora1/capstoneuml-main/Capstone/contact.php">Contact Us</a>
+            <div class="navbar-nav">
+                  <a class="nav-item nav-link active" href="http://weblab.cs.uml.edu/~alora1/capstoneuml-main/Capstone/login.php">Login</a>
+                  <a class="nav-item nav-link active" href="http://weblab.cs.uml.edu/~alora1/capstoneuml-main/Capstone/register.php">Register</a>
+                  <a class="nav-item nav-link active" href="http://weblab.cs.uml.edu/~alora1/capstoneuml-main/Capstone/user.php">Dashboard<span class="sr-only">(current)</span></a>
+                  <a class="nav-item nav-link active" href="http://weblab.cs.uml.edu/~alora1/capstoneuml-main/Capstone/contact.php">Contact Us</a>
                </div>
             </div>
          </nav>
       </div>
+   <div style="position: absolute; background-color: black; height: 50%; width: 25%; top: 25%; left: 25%; opacity: 1;">
+      <form id="contact" action="" method="post" style = "height: 100%; left: 0%">
+         <div class="form-style-6">
+            <h1>First Time User? Register Here</h1>
+            <div class="input-group">
+               <input type="email" name="Semail" placeholder="Email Address"  id = "email" required minlength = "8" />
+            </div>
+            <div class="input-group">
+               <input type="password" name="Spassword" id = "password" placeholder="Password" required minlength = "6"/>
+            </div>
+            <div class="input-group">
+               <input type = "number" name="Sphone_number" id = "phone" placeholder="Phone Number" required/>
+            </div>
+            <input type="submit" value="Register" name="signup" id />
+          </div>
+      </form>
    </div>
-   <div style="position: absolute; background-color: black; height: 55%; width: 20%; top: 25%; left: 30%; opacity: 1;">
-    <form id="contact" action="" method="post">
-      <div class="form-style-6">
-        <h1>First Time User? Register Here</h1>
-        <form>
-        <input type="email" name="field1" placeholder="Email Address" />
-        <input type="text" name="field2" placeholder="Username" />
-        <input type="text" name="field4" placeholder="Password" />
-        <input type="number" name="field3" placeholder="Phone Number" />
-        <input type="submit" value="Register" />
-        </form>
-        </div>
-  </div>
    <div class="tradingview-widget-container" style="position: absolute; left: 76.6%; top: 0%;">
       <div id="tradingview_7bd1d"></div>
       <div class="tradingview-widget-copyright">
@@ -206,6 +262,7 @@
          ]
          }
       </script>
+   </div>
    </div>
    </div>
    <script type="text/javascript">

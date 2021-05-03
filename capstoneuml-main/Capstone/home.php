@@ -21,10 +21,10 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
                <div class="navbar-nav">
-                  <a class="nav-item nav-link active" href="http://cs.uml.edu/~alora1/capstoneuml-main/Capstone/login.php">Login</a>
-                  <a class="nav-item nav-link active" href="http://cs.uml.edu/~alora1/capstoneuml-main/Capstone/user.php">Dashboard<span class="sr-only">(current)</span></a>
-                  <a class="nav-item nav-link active" href="http://cs.uml.edu/~alora1/capstoneuml-main/Capstone/patchnotes.php">Patch Notes</a>
-                  <a class="nav-item nav-link active" href="http://cs.uml.edu/~alora1/capstoneuml-main/Capstone/contact.php">Contact Us</a>
+                  <a class="nav-item nav-link active" href="http://weblab.cs.uml.edu/~alora1/capstoneuml-main/Capstone/login.php">Login</a>
+                  <a class="nav-item nav-link active" href="http://weblab.cs.uml.edu/~alora1/capstoneuml-main/Capstone/register.php">Register</a>
+                  <a class="nav-item nav-link active" href="http://weblab.cs.uml.edu/~alora1/capstoneuml-main/Capstone/user.php">Dashboard<span class="sr-only">(current)</span></a>
+                  <a class="nav-item nav-link active" href="http://weblab.cs.uml.edu/~alora1/capstoneuml-main/Capstone/contact.php">Contact Us</a>
                </div>
             </div>
          </nav>

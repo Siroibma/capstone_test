@@ -1,3 +1,45 @@
+<?php
+session_start();
+
+
+require_once "connect_test.php";
+
+if (isset($_POST["login"])){
+  $email =  mysql_real_escape_string(stripslashes(strip_tags($_POST["Lemail"])));
+  $password =  mysql_real_escape_string(($_POST["Lpassword"]));
+  $sql = "SELECT * FROM Accounts WHERE Email = '$email'";
+  $results = mysql_query($sql, $conn);
+  $num_rows = mysql_num_rows($results);
+  if ($num_rows == 0){
+    $error2 = "There is no account associated with this username!<br>";
+  }
+  else{
+    $sql = "SELECT * FROM Accounts WHERE Email = '".$email."'AND Password = '".$password."'";
+    $results = mysql_query($sql, $conn);
+    $num_rows = mysql_num_rows($results);
+    if($num_rows == 1){
+      $row =  mysql_fetch_row($results);
+      echo $row;
+      $_SESSION["loggedIn"] = TRUE;
+      $_SESSION["email"] = $email;
+      $_SESSION["userID"] = $LastId;
+      $_SESSION["phone_number"] = $row[3];
+
+      header("Location: http://weblab.cs.uml.edu/~alora1/capstoneuml-main/Capstone/user.php");
+
+    }
+    else{
+      $error2 = "Invalid username or password!<br>";
+    }
+  }
+}
+
+?>
+
+
+
+
+
 <!DOCTYPE html>
 <html>
    <head>
@@ -11,6 +53,7 @@
       <script src="https://cdnjs.cloudflare.com/ajax/libs/particlesjs/2.2.2/particles.min.js"></script>
       <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous"></script>
    </head>
+   
    <div id = "background">
       <canvas class="background" style="position: absolute; background-image: url(style/background.png);"></canvas>
       <div>
@@ -21,27 +64,29 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
                <div class="navbar-nav">
-                  <a class="nav-item nav-link active" href="http://cs.uml.edu/~alora1/capstoneuml-main/Capstone/login.php">Login</a>
-                  <a class="nav-item nav-link active" href="http://cs.uml.edu/~alora1/capstoneuml-main/Capstone/user.php">Dashboard<span class="sr-only">(current)</span></a>
-                  <a class="nav-item nav-link active" href="http://cs.uml.edu/~alora1/capstoneuml-main/Capstone/patchnotes.php">Patch Notes</a>
-                  <a class="nav-item nav-link active" href="http://cs.uml.edu/~alora1/capstoneuml-main/Capstone/contact.php">Contact Us</a>
+                  <a class="nav-item nav-link active" href="http://weblab.cs.uml.edu/~alora1/capstoneuml-main/Capstone/login.php" name = "login">Login</a>
+                  <a class="nav-item nav-link active" href="http://weblab.cs.uml.edu/~alora1/capstoneuml-main/Capstone/register.php" name = "register">Register</a>
+                  <a class="nav-item nav-link active" href="http://weblab.cs.uml.edu/~alora1/capstoneuml-main/Capstone/user.php">Dashboard<span class="sr-only">(current)</span></a>
+                  <a class="nav-item nav-link active" href="http://weblab.cs.uml.edu/~alora1/capstoneuml-main/Capstone/contact.php">Contact Us</a>
                </div>
             </div>
          </nav>
       </div>
    </div>
-   <div style="position: absolute; background-color: black; height: 55%; width: 20%; top: 25%; left: 30%; opacity: 1;">
-    <form id="contact" action="C:\Users\siroi\Desktop\capstoneuml-main\Capstone\test.php" method="post">
-      <div class="form-style-6">
-        <h1>Login Here</h1>
-        <form>
-        <input type="email" name="field1" placeholder="Email Address" />
-        <input type="text" name="field2" placeholder="Password" />
-        <span><a href="http://cs.uml.edu/~alora1/capstoneuml-main/Capstone/register.php">New User? Click here to Register.</a></span>
-        <input type="submit" value="Login" />
-        </form>
-        </div>
-  </div>
+   <div style="position: absolute; background-color: black; height: 50%; width: 20%; top: 25%; left: 30%; opacity: 1;">
+      <form id="contact" style = "height: 100%; left: 0%" method="post">
+         <div class="form-style-6">
+            <h1>Welcome, Login Here</h1>
+            <div class="input-group">
+               <input type="email" name="Lemail" placeholder="Email Address" required minlength = "8"/>
+            </div>
+            <div class="input-group">
+               <input type="password" name="Lpassword" placeholder="Password" required minlength = "6"/>
+            </div>
+            <input type="submit" value="Login" name="login"/>
+      </form>
+      </div>
+   </div>
    <div class="tradingview-widget-container" style="position: absolute; left: 76.6%; top: 0%;">
       <div id="tradingview_7bd1d"></div>
       <div class="tradingview-widget-copyright">
@@ -67,7 +112,7 @@
          );
       </script>
    </div>
-   <!-- TradingView Widget END 
+   <!-- TradingView Widget END
       <div id = "conversion" style="font-size:16px;font-family:sans-serif,Arial,Helvetica;width:248px; line-height:24px;border:1px solid #14181C;background-color:#FFFFFF; position: absolute;">
       <div style="background-color:#101214;height:24px; font-weight:bold;text-align:left;padding-top:3px; width:100%;"><span style="background-image:url(https://www.fxexchangerate.com/static/flag.webp); background-position: 0 -2064px;float:left; margin:4px 0 0 20px; width:20px;height:15px; background-repeat:no-repeat;"></span><a rel="nofollow" style="color:#FFFFFF;padding-left:5px;text-decoration:none;" href="https://usd.fxexchangerate.com">United States Dollar</a></div>
       <script type="text/javascript" src="https://w.fxexchangerate.com/converter.php?fm=USD&ft=EUR,GBP,JPY,AUD,CAD,CHF,CNY,HKD,DOP,INR,KHR,RON,ZWD,VND,&lg=en&am=1&ty=2"></script>
@@ -213,7 +258,7 @@
         color: '#2F4F4F',
         connectParticles: true
       });
-      
+
    </script>
    </body>
 </html>

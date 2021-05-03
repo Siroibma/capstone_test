@@ -11,7 +11,6 @@
       <script src="https://cdnjs.cloudflare.com/ajax/libs/particlesjs/2.2.2/particles.min.js"></script>
       <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous"></script>
    </head>
-   <?php include 'redirect.php';?>
    <div id = "background">
       <canvas class="background" style="position: absolute; background-image: url(style/background.png);"></canvas>
       <div>
@@ -22,10 +21,10 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
                <div class="navbar-nav">
-                  <a class="nav-item nav-link active" href="http://cs.uml.edu/~alora1/capstoneuml-main/Capstone/login.php">Login</a>
-                  <a class="nav-item nav-link active" href="http://cs.uml.edu/~alora1/capstoneuml-main/Capstone/user.php">Dashboard<span class="sr-only">(current)</span></a>
-                  <a class="nav-item nav-link active" href="http://cs.uml.edu/~alora1/capstoneuml-main/Capstone/patchnotes.php">Patch Notes</a>
-                  <a class="nav-item nav-link active" href="http://cs.uml.edu/~alora1/capstoneuml-main/Capstone/contact.php">Contact Us</a>
+                  <a class="nav-item nav-link active" href="http://weblab.cs.uml.edu/~alora1/capstoneuml-main/Capstone/login.php">Login</a>
+                  <a class="nav-item nav-link active" href="http://weblab.cs.uml.edu/~alora1/capstoneuml-main/Capstone/register.php">Register</a>
+                  <a class="nav-item nav-link active" href="http://weblab.cs.uml.edu/~alora1/capstoneuml-main/Capstone/user.php">Dashboard<span class="sr-only">(current)</span></a>
+                  <a class="nav-item nav-link active" href="http://weblab.cs.uml.edu/~alora1/capstoneuml-main/Capstone/contact.php">Contact Us</a>
                </div>
             </div>
          </nav>

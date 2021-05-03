@@ -1,3 +1,118 @@
+<?php
+
+session_start();
+
+
+require_once "connect_test.php";
+
+if (isset($_POST['signup'])){
+  unset($error);
+  $phone_number =  mysql_real_escape_string(stripslashes(strip_tags($_POST["Sphone_number"])));
+  $password =  mysql_real_escape_string(($_POST["Spassword"]));
+  $email =  mysql_real_escape_string(stripslashes(strip_tags($_POST["Semail"])));
+
+
+  $sql = 'SELECT * FROM Accounts WHERE Email = "'.$email.'"';
+  $results = mysql_query($sql, $conn);
+  $num_rows = mysql_num_rows($results);
+  //echo $num_rows;
+  if ($num_rows > 0){
+    $error = "This email is already taken!<br>";
+    echo $error;
+  }
+
+  else {
+    $sql= "SELECT UserID FROM Accounts ORDER BY UserID DESC LIMIT 1";
+    $results = mysql_query($sql, $conn);
+    $row = mysql_fetch_assoc($results);
+    $LastId = $row['UserID']+1;
+    $sql = "INSERT INTO Accounts (UserID, Email, Password, Phone) VALUES ('$LastId','$email','$password','$phone_number')";
+    if(mysql_query($sql, $conn)) {
+      $_SESSION["loggedIn"] = TRUE;
+      $_SESSION["email"] = $email;
+      $_SESSION["userID"] = $LastId;
+      $_SESSION["phone_number"] = $phone_number;
+
+      header("Location: http://weblab.cs.uml.edu/~alora1/capstoneuml-main/Capstone/user.php");
+    }
+    else{
+      echo("Error creating account. Please try again later.");
+    }
+  }
+}
+
+
+if (isset($_POST['stock_insert'])){
+
+  unset($error);
+  $stock =  mysql_real_escape_string(stripslashes(strip_tags($_POST["stock"])));
+  $percent =  mysql_real_escape_string(($_POST["percent"]));
+  $email = $_SESSION["email"];
+
+
+  //echo $email;
+  //echo $stock;
+  //echo $percent;
+  $sql = "SELECT * FROM stock_table where
+  email='$email'
+  and stock='$stock'
+  and percent_change='$percent'";
+  $results = mysql_query($sql, $conn);
+  $num_rows = mysql_num_rows($results);
+  //echo $num_rows;
+  if ($num_rows > 0){
+    $error = " <b>This email and stock are already inputted!<br></b>";
+    echo $error;
+  }
+
+
+  else {
+
+    $sql = "INSERT INTO stock_table (email, stock, percent_change) VALUES ('$email','$stock','$percent')";
+    mysql_query($sql, $conn);
+
+  }
+}
+
+if (isset($_POST['stock_delete'])){
+
+  unset($error);
+  $stock =  mysql_real_escape_string(stripslashes(strip_tags($_POST["stock"])));
+  $percent =  mysql_real_escape_string(($_POST["percent"]));
+  $email = $_SESSION["email"];
+
+
+  //echo $email;
+  //echo $stock;
+  //echo $percent;
+  $sql2 = "SELECT * FROM stock_table where
+  email='$email'
+  and stock='$stock'
+  and percent_change='$percent'";
+  $results2 = mysql_query($sql2, $conn);
+  $num_rows2 = mysql_num_rows($results2);
+  //echo $num_rows2;
+  if ($num_rows2 == 0){
+    $error = "<b> This email does not track this stock at this price!<br></b>";
+    //echo $error;
+  }
+
+
+  else {
+
+    $sql = "DELETE from stock_table
+    where
+    email='$email'
+    and stock='$stock'
+    and percent_change='$percent'";
+    mysql_query($sql, $conn);
+
+  }
+}
+
+?>
+
+
 <!DOCTYPE html>
 <html>
    <head>
@@ -23,10 +138,10 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
                <div class="navbar-nav">
-                  <a class="nav-item nav-link active" href="http://cs.uml.edu/~alora1/capstoneuml-main/Capstone/login.php">Login</a>
-                  <a class="nav-item nav-link active" href="http://cs.uml.edu/~alora1/capstoneuml-main/Capstone/user.php">Dashboard<span class="sr-only">(current)</span></a>
-                  <a class="nav-item nav-link active" href="http://cs.uml.edu/~alora1/capstoneuml-main/Capstone/patchnotes.php">Patch Notes</a>
-                  <a class="nav-item nav-link active" href="http://cs.uml.edu/~alora1/capstoneuml-main/Capstone/contact.php">Contact Us</a>
+                  <a class="nav-item nav-link active" href="http://weblab.cs.uml.edu/~alora1/capstoneuml-main/Capstone/login.php">Login</a>
+                  <a class="nav-item nav-link active" href="http://weblab.cs.uml.edu/~alora1/capstoneuml-main/Capstone/register.php">Register</a>
+                  <a class="nav-item nav-link active" href="http://weblab.cs.uml.edu/~alora1/capstoneuml-main/Capstone/user.php">Dashboard<span class="sr-only">(current)</span></a>
+                  <a class="nav-item nav-link active" href="http://weblab.cs.uml.edu/~alora1/capstoneuml-main/Capstone/contact.php">Contact Us</a>
                </div>
             </div>
          </nav>
@@ -36,28 +151,27 @@
    <div id="news" style="position: absolute;">
     <h3>User Information</h3>
         <dl>
-            <dt>Username: </dt>
-                <dd>Laundrymat</dd>
             <dt>Email: </dt>
-                <dd> Laundarymat@coolemail.com</dd>
+                <dd> <?php echo $_SESSION["email"];  ?></dd>
             <dt>Phone Number:</dt>
-                <dd> 108-978-5556</dd>
-            <a href="#" class="btn btn-dark btn-lg">
-                <span class="glyphicon glyphicon-log-out" style="color: white;"></span> Log out
+                <dd> <?php echo $_SESSION["phone_number"];  ?></dd>
+            <a href="logout.php" class="btn btn-dark btn-lg">
+                <span class="glyphicon glyphicon-log-out" style="color: white;" name = "logout"></span> Log out
             </a>
         </dl>
     </div>
 
-    <div id="news" style="position: absolute; top: 71%;">
-        <h3>Change Settings</h3>
+    <div id="news" style="position: absolute; top: 54%;">
+        <h3>Stock Insert & Delete</h3>
             <dl>
-                <dt>How much change(Positive or Negative) are you looking for?</dt>
-                    <dd><form action="">
-                        <input type="text" name="field1" placeholder="1" />
+                    <dd><form action="" method="POST">
+                        <label for="">Insert a stock symbol that you would like to track or delete</label>
+                        <input required type="text" name="stock" placeholder="AAPL" id = "stock" maxlength = "4"/>
+                        <label for="">How much change(Positive or Negative) are you looking for or which stock with percent change are you looking to delete?</label>
+                        <input required type="text" name="percent" placeholder="1" id = "percent" />
+                        <input type="submit" value="Enter" name="stock_insert" />
+                        <input type="submit" value="Delete" name="stock_delete" />
                     </form></dd>
-                <a href="#" class="btn btn-dark btn-lg">
-                    <span class="glyphicon glyphicon-log-out" style="color: white;">Submit</span>
-                </a>
             </dl>
         </div>
    <table class="styled-table" style="position:absolute">
@@ -68,15 +182,45 @@
         </tr>
     </thead>
     <tbody>
-        <tr class="active-row">
-            <td>AAPL</td>
-            <td>6000</td>
-        </tr>
-        <tr class="active-row">
-            <td>GOOG</td>
-            <td>1000</td>
-        </tr>
-        <!-- and so on... -->
+
+<?php
+//$email =  mysql_real_escape_string(stripslashes(strip_tags($_POST["Semail"])));
+$getMaterial = "SELECT stock, percent_change from stock_table where email='$email'";
+$result = mysql_query($getMaterial, $conn);
+while($row = mysql_fetch_assoc($result)){
+	echo '<tr>';
+  echo '<td>';
+  echo $row['stock'];
+	echo '</td> <td>';
+  echo $row['percent_change'];
+	echo '</td> </tr>';
+}
+?>
+
+
+<!--
+            echo '<tr class = active-row>';
+            echo '<td>hello</td>';
+            echo '<td>hello</td>';
+            echo '<td><button>X</button></td>';
+            echo '</tr>';
+
+            $user_email = $_SESSION['email'];
+
+
+
+
+            $sql = 'SELECT * FROM stock_table';
+
+
+            $results = mysql_query($sql, $conn);
+            $num_rows = mysql_num_rows($results);
+            if(num_rows == 0){
+
+              header("Location: http://weblab.cs.uml.edu/~alora1/capstoneuml-main/Capstone/login.php");
+            }
+        ?>
+        and so on... -->
     </tbody>
 </table>
    <div class="tradingview-widget-container" style="position: absolute; left: 76.6%; top: 0%;">
@@ -104,7 +248,7 @@
          );
       </script>
    </div>
-   <!-- TradingView Widget END 
+   <!-- TradingView Widget END
       <div id = "conversion" style="font-size:16px;font-family:sans-serif,Arial,Helvetica;width:248px; line-height:24px;border:1px solid #14181C;background-color:#FFFFFF; position: absolute;">
       <div style="background-color:#101214;height:24px; font-weight:bold;text-align:left;padding-top:3px; width:100%;"><span style="background-image:url(https://www.fxexchangerate.com/static/flag.webp); background-position: 0 -2064px;float:left; margin:4px 0 0 20px; width:20px;height:15px; background-repeat:no-repeat;"></span><a rel="nofollow" style="color:#FFFFFF;padding-left:5px;text-decoration:none;" href="https://usd.fxexchangerate.com">United States Dollar</a></div>
       <script type="text/javascript" src="https://w.fxexchangerate.com/converter.php?fm=USD&ft=EUR,GBP,JPY,AUD,CAD,CHF,CNY,HKD,DOP,INR,KHR,RON,ZWD,VND,&lg=en&am=1&ty=2"></script>
@@ -251,7 +395,8 @@
         color: '#2F4F4F',
         connectParticles: true
       });
-      
+
    </script>
+
    </body>
 </html>
